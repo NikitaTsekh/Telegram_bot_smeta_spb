@@ -1,0 +1,53 @@
+import datetime
+
+from data.data import cursor, connect
+
+
+# Выбрать один
+def bd_get_one(body):
+    try:
+        cursor.execute(body)
+        user = cursor.fetchone()
+        return user[0]
+    except TypeError:
+        return None
+
+
+# Выбрать много
+def bd_get_many(body):
+    cursor.execute(body)
+    rows = cursor.fetchall()
+    get_list = []
+    for row in rows:
+        for x in row:
+            get_list.append(x)
+    return get_list
+
+
+def bd_set(body):
+    cursor.execute(body)
+    connect.commit()
+
+
+def get_date():
+    tine_now = datetime.datetime.now()
+    date = f"{tine_now.date()}"
+    date = f"{date[8:]}.{date[5:7]}.{date[:4]}"
+    return date
+
+
+def get_time():
+    tine_now = datetime.datetime.now()
+    time = f"{tine_now.time()}"
+    time = time[:8]
+    return time
+
+
+def max_task_id():
+    try:
+        task_id = bd_get_many(f"SELECT task_id FROM mid_tasks")
+        task_id = max(task_id)
+    except ValueError:
+        task_id = 0
+
+    return task_id
